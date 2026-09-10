@@ -24,7 +24,7 @@ public class Missile : MonoBehaviour
     {
         // Míssil do jogador sobe (Y positivo), míssil inimigo desce (Y negativo).
         float direction = owner == Owner.Player ? 1f : -1f;
-        rb2d.velocity = new Vector2(0f, direction * speed);
+        rb2d.linearVelocity = new Vector2(0f, direction * speed);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
