@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Mothership
   - Wall
+  - MotherShip
   layers:
   - Default
   - TransparentFX
