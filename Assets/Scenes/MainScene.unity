@@ -600,7 +600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -645,7 +645,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -88, y: 154}
+  m_AnchoredPosition: {x: -250, y: 140}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1425465903
@@ -679,7 +679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -724,7 +724,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 175, y: 154}
+  m_AnchoredPosition: {x: 300, y: 140}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1507075228
@@ -861,6 +861,8 @@ MonoBehaviour:
   startingLives: 3
   baseEnemySpeedMultiplier: 1
   speedIncrementPerKill: 0.03
+  explosionPrefab: {fileID: 7281369496742827007, guid: d0283fda1f28e8947903849aafd402c6, type: 3}
+  playerHitFreezeDuration: 3
   victorySceneName: VictoryScene
   defeatSceneName: DefeatScene
 --- !u!4 &1581240613
@@ -950,6 +952,9 @@ MonoBehaviour:
   missilePrefab: {fileID: 7064411183974293208, guid: 7c7e56b716531414788d41820c160a3a, type: 3}
   firePoint: {fileID: 2145779530}
   fireCooldown: 0.5
+  spriteRenderer: {fileID: 0}
+  flashInterval: 0.08
+  flashCount: 8
 --- !u!61 &1891988447
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1182,8 +1187,8 @@ Canvas:
   m_GameObject: {fileID: 2135049028}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 450879318}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1

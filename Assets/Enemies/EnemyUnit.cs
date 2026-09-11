@@ -108,7 +108,12 @@ public class EnemyUnit : MonoBehaviour
     {
         if (other.CompareTag("PlayerMissile"))
         {
-            GameManager.Instance.OnEnemyDestroyed(pointValue);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SpawnExplosion(transform.position);
+                GameManager.Instance.OnEnemyDestroyed(pointValue);
+            }
+
             Destroy(gameObject);
         }
     }

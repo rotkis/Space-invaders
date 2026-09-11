@@ -24,6 +24,12 @@ public class EndSceneController : MonoBehaviour
     /// <summary>Ligue este método ao OnClick de um botão "Jogar Novamente".</summary>
     public void RestartGame()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetForNewGame();
+        }
+
+        Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(gameSceneName);
     }
 }

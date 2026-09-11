@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Vidas")]
     [SerializeField] private int startingLives = 3;
-    private int currentLives;
+    private int currentLives = 3;
 
     [Header("Pontuação")]
     private int score = 0;
@@ -23,28 +24,74 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float speedIncrementPerKill = 0.03f;
     public float EnemySpeedMultiplier { get; private set; }
 
+    [Header("Efeitos")]
+    [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private float playerHitFreezeDuration = 3f;
+
     [Header("Cenas")]
     [SerializeField] private string victorySceneName = "VictoryScene";
     [SerializeField] private string defeatSceneName = "DefeatScene";
 
     private int totalEnemiesAlive = 0;
     private bool gameEnded = false;
+    private bool hitFreezeActive = false;
+    private PlayerController playerController;
 
     // Chaves usadas para levar o placar final para as cenas de fim de jogo.
     public const string PlayerPrefsScoreKey = "FinalScore";
 
     private void Awake()
     {
-        // Garante uma única instância entre carregamentos de cena.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
 
+        Instance = this;
+        ResetRuntimeState();
+    }
+
+    private void Start()
+    {
+        playerController = FindAnyObjectByType<PlayerController>();
+    }
+
+    public void ResetForNewGame()
+    {
+        ResetRuntimeState();
+        playerController = FindAnyObjectByType<PlayerController>();
+    }
+
+    private void ResetRuntimeState()
+    {
         currentLives = startingLives;
+        score = 0;
         EnemySpeedMultiplier = baseEnemySpeedMultiplier;
+        totalEnemiesAlive = 0;
+        gameEnded = false;
+        hitFreezeActive = false;
+        Time.timeScale = 1f;
+    }
+
+    public void SpawnExplosion(Vector3 position)
+    {
+        if (explosionPrefab == null)
+            return;
+
+        Instantiate(explosionPrefab, position, Quaternion.identity);
+    }
+
+    public void ClearProjectiles()
+    {
+        Missile[] projectiles = FindObjectsByType<Missile>(FindObjectsSortMode.None);
+        foreach (Missile missile in projectiles)
+        {
+            if (missile != null)
+            {
+                Destroy(missile.gameObject);
+            }
+        }
     }
 
     /// <summary>Chamado pelo EnemySpawner assim que a leva de inimigos é criada.</summary>
@@ -61,7 +108,7 @@ public class GameManager : MonoBehaviour
         AddScore(pointValue);
 
         totalEnemiesAlive--;
-        EnemySpeedMultiplier += speedIncrementPerKill; // Quanto menos naves, mais rápido o jogo fica.
+        EnemySpeedMultiplier += speedIncrementPerKill;
 
         if (totalEnemiesAlive <= 0)
         {
@@ -84,15 +131,47 @@ public class GameManager : MonoBehaviour
     public int GetScore() => score;
     public int GetLives() => currentLives;
 
-    /// <summary>Chamado pelo PlayerController quando o jogador é atingido.</summary>
     public void PlayerHit()
     {
-        if (gameEnded) return;
+        if (gameEnded || hitFreezeActive)
+            return;
+
+        StartCoroutine(HandlePlayerHit());
+    }
+
+    private IEnumerator HandlePlayerHit()
+    {
+        hitFreezeActive = true;
+        ClearProjectiles();
+
+        if (playerController != null)
+        {
+            playerController.TriggerHitFlash();
+            SpawnExplosion(playerController.transform.position);
+        }
+
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(playerHitFreezeDuration);
+        Time.timeScale = 1f;
 
         currentLives--;
+
         if (currentLives <= 0)
         {
+            if (playerController != null)
+            {
+                SpawnExplosion(playerController.transform.position);
+            }
+
             Defeat();
+            yield break;
+        }
+
+        hitFreezeActive = false;
+
+        if (playerController != null)
+        {
+            playerController.ResetAfterHit();
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -20,11 +21,27 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fireCooldown = 0.5f;
     private float fireTimer = 0f;
 
+    [Header("Hit / Flash")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private float flashInterval = 0.08f;
+    [SerializeField] private int flashCount = 8;
+
     private Rigidbody2D rb2d;
+    private Color originalColor;
 
     private void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
     }
 
     private void Update()
@@ -61,9 +78,38 @@ public class PlayerController : MonoBehaviour
         Instantiate(missilePrefab, spawnPos, Quaternion.identity);
     }
 
+    public void TriggerHitFlash()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        StopAllCoroutines();
+        StartCoroutine(FlashRoutine());
+    }
+
+    public void ResetAfterHit()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor;
+            spriteRenderer.enabled = true;
+        }
+    }
+
+    private IEnumerator FlashRoutine()
+    {
+        for (int i = 0; i < flashCount; i++)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+            yield return new WaitForSecondsRealtime(flashInterval);
+        }
+
+        spriteRenderer.enabled = true;
+        spriteRenderer.color = originalColor;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Se uma nave inimiga encostar diretamente no jogador.
         if (other.CompareTag("Enemy") || other.CompareTag("MotherShip"))
         {
             GameManager.Instance.PlayerHit();

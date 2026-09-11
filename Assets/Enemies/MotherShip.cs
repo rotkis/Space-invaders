@@ -43,7 +43,12 @@ public class MotherShip : MonoBehaviour
     {
         if (other.CompareTag("PlayerMissile"))
         {
-            GameManager.Instance.OnMotherShipDestroyed(pointValue);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SpawnExplosion(transform.position);
+                GameManager.Instance.OnMotherShipDestroyed(pointValue);
+            }
+
             Destroy(gameObject);
         }
     }
